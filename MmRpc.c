@@ -128,7 +128,7 @@ int MmRpc_create(const char *service, const MmRpc_Params *params,
     obj->fd = open(cbuf, O_RDWR);
 
     if (obj->fd < 0) {
-        printf("MmRpc_create: Error: open failed, name=%s\n", cbuf);
+        printf("MmRpc_create: Error: open failed, name=%s, fd: %d\n", cbuf, obj->fd);
         status = MmRpc_E_FAIL;
         goto leave;
     }
@@ -140,7 +140,7 @@ int MmRpc_create(const char *service, const MmRpc_Params *params,
     status = ioctl(obj->fd, RPPC_IOC_CREATE, &obj->connect);
 
     if (status < 0) {
-        printf("MmRpc_create: Error: connect failed\n");
+        printf("MmRpc_create: Error: connect failed, status: %d\n", status);
         status = MmRpc_E_FAIL;
         goto leave;
     }
@@ -277,7 +277,7 @@ int MmRpc_call(MmRpc_Handle handle, MmRpc_FxnCtx *ctx, int32_t *ret)
     status = write(obj->fd, msg, len);
 
     if (status < 0) {
-        printf("MmRpc_call: Error: write failed\n");
+        printf("MmRpc_call: Error: write failed, status: %d\n", status);
         status = MmRpc_E_FAIL;
         goto leave;
     }
@@ -286,7 +286,7 @@ int MmRpc_call(MmRpc_Handle handle, MmRpc_FxnCtx *ctx, int32_t *ret)
     status = read(obj->fd, &reply_msg, sizeof(struct rppc_function_return));
 
     if (status < 0) {
-        printf("MmRpc_call: Error: read failed\n");
+        printf("MmRpc_call: Error: read failed, status: %d\n", status);
         status = MmRpc_E_FAIL;
         goto leave;
     }
@@ -336,7 +336,7 @@ int MmRpc_release(MmRpc_Handle handle, MmRpc_BufType type, int num,
     }
 
     if (stat < 0) {
-        printf("MmRpc_release: Error: unable to release buffer\n");
+        printf("MmRpc_release: Error: unable to release buffer, stat: %d\n", stat);
     }
 
     return(stat);
@@ -368,7 +368,7 @@ int MmRpc_use(MmRpc_Handle handle, MmRpc_BufType type, int num,
     }
 
     if (stat < 0) {
-        printf("MmRpc_use: Error: unable to declare buffer use\n");
+        printf("MmRpc_use: Error: unable to declare buffer use, stat: %d\n", stat);
     }
 
     return(stat);
@@ -404,6 +404,7 @@ int MmRpc_bufHandle(MmRpc_Handle handle, int cmd, int num, MmRpc_BufDesc *desc)
     stat = ioctl(obj->fd, cmd, &reg);
 
     if (stat < 0) {
+        printf("MmRpc_bufHandle: ioctl error: %d\n", stat);
         stat = MmRpc_E_SYS;
     }
 
